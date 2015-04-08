@@ -28,63 +28,63 @@
     loop: true,
     responsiveFallback: false,
     direction : 'vertical'
-	};
+  };
 
-	/*------------------------------------------------*/
-	/*  Credit: Eike Send for the awesome swipe event */
-	/*------------------------------------------------*/
+  /*------------------------------------------------*/
+  /*  Credit: Eike Send for the awesome swipe event */
+  /*------------------------------------------------*/
 
-	$.fn.swipeEvents = function() {
-      return this.each(function() {
+  $.fn.swipeEvents = function() {
+    return this.each(function() {
 
-        var startX,
-            startY,
-            $this = $(this);
+      var startX,
+          startY,
+          $this = $(this);
 
-        $this.bind('touchstart', touchstart);
+      $this.bind('touchstart', touchstart);
 
-        function touchstart(event) {
-          var touches = event.originalEvent.touches;
-          if (touches && touches.length) {
-            startX = touches[0].pageX;
-            startY = touches[0].pageY;
-            $this.bind('touchmove', touchmove);
+      function touchstart(event) {
+        var touches = event.originalEvent.touches;
+        if (touches && touches.length) {
+          startX = touches[0].pageX;
+          startY = touches[0].pageY;
+          $this.bind('touchmove', touchmove);
+        }
+      }
+
+      function touchmove(event) {
+        var touches = event.originalEvent.touches;
+        if (touches && touches.length) {
+          var deltaX = startX - touches[0].pageX;
+          var deltaY = startY - touches[0].pageY;
+
+          if (deltaX >= 50) {
+            $this.trigger("swipeLeft");
+          }
+          if (deltaX <= -50) {
+            $this.trigger("swipeRight");
+          }
+          if (deltaY >= 50) {
+            $this.trigger("swipeUp");
+          }
+          if (deltaY <= -50) {
+            $this.trigger("swipeDown");
+          }
+          if (Math.abs(deltaX) >= 50 || Math.abs(deltaY) >= 50) {
+            $this.unbind('touchmove', touchmove);
           }
         }
+      }
 
-        function touchmove(event) {
-          var touches = event.originalEvent.touches;
-          if (touches && touches.length) {
-            var deltaX = startX - touches[0].pageX;
-            var deltaY = startY - touches[0].pageY;
-
-            if (deltaX >= 50) {
-              $this.trigger("swipeLeft");
-            }
-            if (deltaX <= -50) {
-              $this.trigger("swipeRight");
-            }
-            if (deltaY >= 50) {
-              $this.trigger("swipeUp");
-            }
-            if (deltaY <= -50) {
-              $this.trigger("swipeDown");
-            }
-            if (Math.abs(deltaX) >= 50 || Math.abs(deltaY) >= 50) {
-              $this.unbind('touchmove', touchmove);
-            }
-          }
-        }
-
-      });
-    };
+    });
+  };
 
 
   $.fn.onepage_scroll = function(options){
     var settings = $.extend({}, defaults, options),
         el = $(this),
         sections = $(settings.sectionContainer)
-        total = sections.length,
+    total = sections.length,
         status = "off",
         topPos = 0,
         leftPos = 0,
@@ -95,31 +95,12 @@
     $.fn.transformPage = function(settings, pos, index) {
       if (typeof settings.beforeMove == 'function') settings.beforeMove(index);
 
-      // Just a simple edit that makes use of modernizr to detect an IE8 browser and changes the transform method into
-    	// an top animate so IE8 users can also use this script.
-    	if($('html').hasClass('ie8')){
-        if (settings.direction == 'horizontal') {
-          var toppos = (el.width()/100)*pos;
-          $(this).animate({left: toppos+'px'},settings.animationTime);
-        } else {
-          var toppos = (el.height()/100)*pos;
-          $(this).animate({top: toppos+'px'},settings.animationTime);
-        }
-    	} else{
-    	  $(this).css({
-    	    "-webkit-transform": ( settings.direction == 'horizontal' ) ? "translate3d(" + pos + "%, 0, 0)" : "translate3d(0, " + pos + "%, 0)",
-         "-webkit-transition": "all " + settings.animationTime + "ms " + settings.easing,
-         "-moz-transform": ( settings.direction == 'horizontal' ) ? "translate3d(" + pos + "%, 0, 0)" : "translate3d(0, " + pos + "%, 0)",
-         "-moz-transition": "all " + settings.animationTime + "ms " + settings.easing,
-         "-ms-transform": ( settings.direction == 'horizontal' ) ? "translate3d(" + pos + "%, 0, 0)" : "translate3d(0, " + pos + "%, 0)",
-         "-ms-transition": "all " + settings.animationTime + "ms " + settings.easing,
-         "transform": ( settings.direction == 'horizontal' ) ? "translate3d(" + pos + "%, 0, 0)" : "translate3d(0, " + pos + "%, 0)",
-         "transition": "all " + settings.animationTime + "ms " + settings.easing
-    	  });
-    	}
-      $(this).one('webkitTransitionEnd otransitionend oTransitionEnd msTransitionEnd transitionend', function(e) {
-        if (typeof settings.afterMove == 'function') settings.afterMove(index);
-      });
+      var animationConf = {y:pos+'%', ease: "Power2.easeOut"};
+      if (typeof settings.afterMove == 'function'){
+        animationConf.onCompleteParams= [index, "{self}"];
+        animationConf.onComplete = settings.afterMove;
+      }
+      TweenMax.to($(this), 1, animationConf );
     }
 
     $.fn.moveDown = function() {
@@ -205,8 +186,8 @@
         pos = ((page_index - 1) * 100) * -1;
 
         if (history.replaceState && settings.updateURL == true) {
-            var href = window.location.href.substr(0,window.location.href.indexOf('#')) + "#" + (page_index - 1);
-            history.pushState( {}, document.title, href );
+          var href = window.location.href.substr(0,window.location.href.indexOf('#')) + "#" + (page_index - 1);
+          history.pushState( {}, document.title, href );
         }
         el.transformPage(settings, pos, page_index);
       }
@@ -218,18 +199,18 @@
       var typeOfRF = typeof settings.responsiveFallback
 
       if(typeOfRF == "number"){
-      	valForTest = $(window).width() < settings.responsiveFallback;
+        valForTest = $(window).width() < settings.responsiveFallback;
       }
       if(typeOfRF == "boolean"){
-      	valForTest = settings.responsiveFallback;
+        valForTest = settings.responsiveFallback;
       }
       if(typeOfRF == "function"){
-      	valFunction = settings.responsiveFallback();
-      	valForTest = valFunction;
-      	typeOFv = typeof valForTest;
-      	if(typeOFv == "number"){
-      		valForTest = $(window).width() < valFunction;
-      	}
+        valFunction = settings.responsiveFallback();
+        valForTest = valFunction;
+        typeOFv = typeof valForTest;
+        if(typeOFv == "number"){
+          valForTest = $(window).width() < valFunction;
+        }
       }
 
       //end modification
@@ -262,20 +243,20 @@
 
 
     function init_scroll(event, delta) {
-        deltaOfInterest = delta;
-        var timeNow = new Date().getTime();
-        // Cancel scroll if currently animating or within quiet period
-        if(timeNow - lastAnimation < quietPeriod + settings.animationTime) {
-            event.preventDefault();
-            return;
-        }
+      deltaOfInterest = delta;
+      var timeNow = new Date().getTime();
+      // Cancel scroll if currently animating or within quiet period
+      if(timeNow - lastAnimation < quietPeriod + settings.animationTime) {
+        event.preventDefault();
+        return;
+      }
 
-        if (deltaOfInterest < 0) {
-          el.moveDown()
-        } else {
-          el.moveUp()
-        }
-        lastAnimation = timeNow;
+      if (deltaOfInterest < 0) {
+        el.moveDown()
+      } else {
+        el.moveUp()
+      }
+      lastAnimation = timeNow;
     }
 
     // Prepare everything before binding wheel scroll
@@ -291,11 +272,11 @@
       $(this).css({
         position: "absolute",
         left: ( settings.direction == 'horizontal' )
-          ? leftPos + "%"
-          : 0,
+            ? leftPos + "%"
+            : 0,
         top: ( settings.direction == 'vertical' || settings.direction != 'horizontal' )
-          ? topPos + "%"
-          : 0
+            ? topPos + "%"
+            : 0
       });
 
       if (settings.direction == 'horizontal')
@@ -394,25 +375,25 @@
           switch(e.which) {
             case 38:
               if (tag != 'input' && tag != 'textarea') el.moveUp()
-            break;
+              break;
             case 40:
               if (tag != 'input' && tag != 'textarea') el.moveDown()
-            break;
+              break;
             case 32: //spacebar
               if (tag != 'input' && tag != 'textarea') el.moveDown()
-            break;
+              break;
             case 33: //pageg up
               if (tag != 'input' && tag != 'textarea') el.moveUp()
-            break;
+              break;
             case 34: //page dwn
               if (tag != 'input' && tag != 'textarea') el.moveDown()
-            break;
+              break;
             case 36: //home
               el.moveTo(1);
-            break;
+              break;
             case 35: //end
               el.moveTo(total);
-            break;
+              break;
             default: return;
           }
         }
